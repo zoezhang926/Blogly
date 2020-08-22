@@ -1,25 +1,47 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Details</title>
-</head>
+{% block title %}{{ user.full_name }}{% endblock %}}
+
 {% block content %}
 
+<div class="row">
 
-<h1>{{ user.first_name }}</h1>
-<p>First name: {{user.first_name}}</p>
-<p>Last name: {{user.last_name}}</p>
-{% if user.image_url %}
-<div class="col-sm-2 col-6">
-    <img src="{{ user.image_url }}" alt="{{ user.first_name }}" class="img-fluid">
+  {% if user.image_url %}
+  <div class="col-sm-2 col-6">
+    <img src="{{ user.image_url }}"
+         alt="{{ user.full_name }}"
+         class="img-fluid">
+  </div>
+  {% endif %}
+
+  <div class="col-sm-10 col-12">
+    <h1>{{ user.full_name }}</h1>
+
+    <form>
+      <button class="btn btn-primary btn-sm"
+              formaction="/users/{{ user.id }}/edit"
+              formmethod="GET">Edit
+      </button>
+      <button class="btn btn-danger btn-sm"
+              formaction="/users/{{ user.id }}/delete"
+              formmethod="POST">Delete
+      </button>
+    </form>
+
+    <h2 class="mt-4">Posts</h2>
+
+    <ul>
+      {% for post in user.posts %}
+      <li>
+        <a href="/posts/{{ post.id}}">{{ post.title }}</a>
+        <small>{{ post.friendly_date }}</small>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <p><a href="/users/{{ user.id }}/posts/new" class="btn btn-primary">Add Post</a></p>
+
+  </div>
 </div>
-<br>
-{% endif %}
-<button><a href="/{{user.id}}/edit">Edit User</a></button>
-<button><a href="/{{user.id}}/delete">Delete User</a></button>
-<button><a href="/users">Go back</a></button>
-
 
 {% endblock %}

@@ -1,46 +1,37 @@
-"""Models for Blogly."""
-from flask_sqlalchemy import SQLAlchemy
+"""SQLAlchemy models for blogly."""
+
 import datetime
+from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
 
-def connect_db(app):
-    """Connect to database."""
-
-    db.app = app
-    db.init_app(app)
+DEFAULT_IMAGE_URL = "https://www.freeiconspng.com/uploads/icon-user-blue-symbol-people-person-generic--public-domain--21.png"
 
 
-class User (db.Model):
-    """User."""
+class User(db.Model):
+    """Site user."""
 
     __tablename__ = "users"
 
-    def __repr__(self):
-        u = self
-        return f"<User id = {u.id} first_name= {u.first_name} last_name= {u.last_name} image_url= {u.image_url}>"
-
-    id = db.Column(db.Integer,
-                   primary_key=True,
-                   autoincrement=True)
-    first_name = db.Column(db.String(50),
-                           nullable=False)
-    last_name = db.Column(db.String(50),
-                          nullable=False)
-    image_url = db.Column(db.String, nullable=True)
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.Text, nullable=False)
+    last_name = db.Column(db.Text, nullable=False)
+    image_url = db.Column(db.Text, nullable=False, default=DEFAULT_IMAGE_URL)
 
     posts = db.relationship("Post", backref="user", cascade="all, delete-orphan")
 
-class Post (db.Model):
-    """Post."""
+    @property
+    def full_name(self):
+        """Return full name of user."""
+
+        return f"{self.first_name} {self.last_name}"
+
+
+class Post(db.Model):
+    """Blog post."""
 
     __tablename__ = "posts"
-
-    def __repr__(self):
-        p = self
-        return f"<Post id = {p.id} titlee= {p.title} content= {p.content} created_at= {p.created_at} user_id={p.user_id}>"
-
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Text, nullable=False)
@@ -49,28 +40,20 @@ class Post (db.Model):
         db.DateTime,
         nullable=False,
         default=datetime.datetime.now)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-class PostTag(db.Model):
-    """Tag on a post."""
+    @property
+    def friendly_date(self):
+        """Return nicely-formatted date."""
 
-    __tablename__ = "posts_tags"
-
-    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), primary_key=True)
-    tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'), primary_key=True)
+        return self.created_at.strftime("%m-%d-%Y %H:%M%p")
 
 
-class Tag(db.Model):
-    """Tag that can be added to posts."""
+def connect_db(app):
+    """Connect this database to provided Flask app.
 
-    __tablename__ = 'tags'
+    You should call this in your Flask app.
+    """
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text, nullable=False, unique=True)
-
-    posts = db.relationship(
-        'Post',
-        secondary="posts_tags",
-        # cascade="all,delete",
-        backref="tags",
-    )
+    db.app = app
+    db.init_app(app)
