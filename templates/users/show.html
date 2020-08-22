@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+</head>
+{% block content %}
+
+
+<h1>{{ user.first_name }}</h1>
+<p>First name: {{user.first_name}}</p>
+<p>Last name: {{user.last_name}}</p>
+{% if user.image_url %}
+<div class="col-sm-2 col-6">
+    <img src="{{ user.image_url }}" alt="{{ user.first_name }}" class="img-fluid">
+</div>
+<br>
+{% endif %}
+<button><a href="/{{user.id}}/edit">Edit User</a></button>
+<button><a href="/{{user.id}}/delete">Delete User</a></button>
+<button><a href="/users">Go back</a></button>
+
+
+{% endblock %}

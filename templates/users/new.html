@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add User</title>
+</head>
+
+{% block content %}
+
+
+<h2>Add User</h2>
+<form method="POST">
+    <p>First Name: <input name="first_name"></p>
+    <p>Last Name: <input name="last_name"></p>
+    <p>Image URL: <input name="image_url"></p>
+    <input type="submit">
+</form>
+<a href="/users"> Go back</a>
+{% endblock %}
